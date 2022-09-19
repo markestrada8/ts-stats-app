@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const node_fs_1 = require("node:fs");
+const CSVFileReader_1 = require("./CSVFileReader");
+const MatchResult_1 = require("./MatchResult");
 // macOS, Linux, and Windows
 // MY CODE
 // const matches = readFileSync('football.csv', { encoding: 'utf8' });
@@ -13,12 +14,16 @@ const node_fs_1 = require("node:fs");
 //   console.log(line)
 // })
 // console.log(matchesList)
+//REFACTOR CSV READER
+const parsedFile = new CSVFileReader_1.CSVFileReader('football.csv');
+parsedFile.read();
+console.log(parsedFile.data[0][0]);
 // HIS CODE (RAW APPROACH)
-const matches = (0, node_fs_1.readFileSync)('football.csv', { encoding: 'utf8' })
-    .split('\n')
-    .map((row) => {
-    return row.split(',');
-});
+// const matches = readFileSync('football.csv', { encoding: 'utf8' })
+//   .split('\n')
+//   .map((row: string): string[] => {
+//     return row.split(',')
+//   })
 //REFACTOR TO CLARIFY CONDITIONAL LOGIC (VARIABLES)
 // const matchResult = {
 //   homeWin: 'H',
@@ -26,18 +31,12 @@ const matches = (0, node_fs_1.readFileSync)('football.csv', { encoding: 'utf8' }
 //   draw: 'D',
 // }
 //REFACTOR TO ENUM (BASICALLY ANNOTATION TO OTHER ENGINEERS?)
-var matchResult;
-(function (matchResult) {
-    matchResult["HomeWin"] = "H";
-    matchResult["awayWin"] = "A";
-    matchResult["Draw"] = "D";
-})(matchResult || (matchResult = {}));
 let manUnitedWins = 0;
-for (let match of matches) {
-    if (match[1] === 'Man United' && match[5] === matchResult.HomeWin) {
+for (let match of parsedFile.data) {
+    if (match[1] === 'Man United' && match[5] === MatchResult_1.MatchResult.HomeWin) {
         manUnitedWins++;
     }
-    else if (match[2] === 'Man United' && match[5] === matchResult.awayWin) {
+    else if (match[2] === 'Man United' && match[5] === MatchResult_1.MatchResult.awayWin) {
         manUnitedWins++;
     }
 }

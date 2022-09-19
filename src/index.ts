@@ -1,4 +1,5 @@
-import { readFileSync } from 'node:fs';
+import { CSVFileReader } from './CSVFileReader';
+import { MatchResult } from './MatchResult';
 
 // macOS, Linux, and Windows
 // MY CODE
@@ -16,13 +17,18 @@ import { readFileSync } from 'node:fs';
 
 // console.log(matchesList)
 
+//REFACTOR CSV READER
+const parsedFile = new CSVFileReader('football.csv');
+parsedFile.read()
+console.log(parsedFile.data[0][0])
+
 // HIS CODE (RAW APPROACH)
 
-const matches = readFileSync('football.csv', { encoding: 'utf8' })
-  .split('\n')
-  .map((row: string): string[] => {
-    return row.split(',')
-  })
+// const matches = readFileSync('football.csv', { encoding: 'utf8' })
+//   .split('\n')
+//   .map((row: string): string[] => {
+//     return row.split(',')
+//   })
 
 //REFACTOR TO CLARIFY CONDITIONAL LOGIC (VARIABLES)
 // const matchResult = {
@@ -32,17 +38,13 @@ const matches = readFileSync('football.csv', { encoding: 'utf8' })
 // }
 
 //REFACTOR TO ENUM (BASICALLY ANNOTATION TO OTHER ENGINEERS?)
-enum matchResult {
-  HomeWin = 'H',
-  awayWin = 'A',
-  Draw = 'D',
-}
+
 
 let manUnitedWins = 0
-for (let match of matches) {
-  if (match[1] === 'Man United' && match[5] === matchResult.HomeWin) {
+for (let match of parsedFile.data) {
+  if (match[1] === 'Man United' && match[5] === MatchResult.HomeWin) {
     manUnitedWins++
-  } else if (match[2] === 'Man United' && match[5] === matchResult.awayWin) {
+  } else if (match[2] === 'Man United' && match[5] === MatchResult.awayWin) {
     manUnitedWins++
   }
 }
