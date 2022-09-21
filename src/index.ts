@@ -1,52 +1,31 @@
+import { MatchReader } from './MatchReader';
 import { CSVFileReader } from './CSVFileReader';
-import { MatchResult } from './MatchResult';
+import { Summary } from './Summary';
+import { WinsAnalysis } from './analyzers/WinsAnalysis';
+import { ConsoleReport } from './reportTargets/ConsoleReport';
+import { HTMLReport } from './reportTargets/HTMLReport';
 
-// macOS, Linux, and Windows
-// MY CODE
-// const matches = readFileSync('football.csv', { encoding: 'utf8' });
+//NEW INDEX FILE
 
-// const lines = matches.split('\n')
-// const matchesList = []
-// lines.forEach((line) => {
-//   matchesList.push(Array(line.split(',')));
-// })
+//READ FILE
+const csvFileReader = new CSVFileReader('football.csv')
 
-// matchesList.forEach((line) => {
-//   console.log(line)
-// })
+//FORMAT DATA FOR SPECIFIC USE
+const matchReader = new MatchReader(csvFileReader)
+matchReader.load()
 
-// console.log(matchesList)
+//CALL(INSTANTIATE) SPECIFIC ANALYSIS TOOL AND OUTPUT METHOD
+const winsAnalysis = new WinsAnalysis('Man United')
+const consoleReport = new ConsoleReport()
 
-//REFACTOR CSV READER
-const parsedFile = new CSVFileReader('football.csv');
-parsedFile.read()
-console.log(parsedFile.data[0][0])
+//INSTANTIATE REFERENCE HUB WITH COMPOSITION REFERENCES AND EXECUTE REPORT
+const summary = new Summary(winsAnalysis, consoleReport)
+summary.buildAndPrintReport(matchReader.matches)
 
-// HIS CODE (RAW APPROACH)
+//HTML
+const summaryTwo = new Summary(new WinsAnalysis('Man United'), new HTMLReport())
+summaryTwo.buildAndPrintReport(matchReader.matches)
 
-// const matches = readFileSync('football.csv', { encoding: 'utf8' })
-//   .split('\n')
-//   .map((row: string): string[] => {
-//     return row.split(',')
-//   })
-
-//REFACTOR TO CLARIFY CONDITIONAL LOGIC (VARIABLES)
-// const matchResult = {
-//   homeWin: 'H',
-//   awayWin: 'A',
-//   draw: 'D',
-// }
-
-//REFACTOR TO ENUM (BASICALLY ANNOTATION TO OTHER ENGINEERS?)
-
-
-let manUnitedWins = 0
-for (let match of parsedFile.data) {
-  if (match[1] === 'Man United' && match[5] === MatchResult.HomeWin) {
-    manUnitedWins++
-  } else if (match[2] === 'Man United' && match[5] === MatchResult.awayWin) {
-    manUnitedWins++
-  }
-}
-
-console.log(`Manchester United Wins: ${manUnitedWins}`)
+//HTML 2 - STATIC METHOD ON SUMMARY
+const summaryThree = Summary.winsAnalysisWithHTMLReport('Man United')
+summaryThree.buildAndPrintReport(matchReader.matches)
